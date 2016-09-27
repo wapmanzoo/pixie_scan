@@ -260,7 +260,9 @@ void VandleProcessor::AnalyzeBarStarts(void) {
             BarDetector start = (*itStart).second;
 
             double tof = bar.GetCorTimeAve() -
-                start.GetCorTimeAve() + cal.GetTofOffset(startLoc);
+                 start.GetTimeZero() + cal.GetTofOffset(startLoc);
+
+// want to edit start.GetCorTimeAve() to be start.GetCorTimeZero() from the distance between them
 
             double corTof =
                 CorrectTOF(tof, bar.GetFlightPath(), cal.GetZ0());

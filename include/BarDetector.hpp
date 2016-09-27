@@ -87,8 +87,15 @@ public:
     }
     /** \return The walk corrected time average */
     double GetCorTimeAve() const {
-        return(left_.GetCorrectedTime() +
-               right_.GetCorrectedTime()*0.5);
+        return((left_.GetCorrectedTime() +
+               right_.GetCorrectedTime())*0.5);
+    }
+    // Return velocity determined Tzero in past
+        //left is MCP1 and is 42.74 cm from zero
+        //right is MCP2 and is 81.2 cm from MCP1
+    double GetTimeZero() const {
+        return(left_.GetHighResTime() - (( (right_.GetHighResTime() -
+              left_.GetHighResTime() )/81.2)*42.74) );
     }
     /** \return the The walk corrected time difference */
     double GetCorTimeDiff() const {
