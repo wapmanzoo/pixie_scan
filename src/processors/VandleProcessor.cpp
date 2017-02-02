@@ -90,10 +90,10 @@ void VandleProcessor::DeclarePlots(void) {
         "Bar vs. Time of Flight");
         DeclareHistogram2D(DD_CORTOFBARS, SC, S8,
         "Bar vs  Cor Time of Flight");
-        DeclareHistogram2D(DD_TQDCAVEVSTOF, SC, SD,
-        "<E> vs. TOF(0.5ns/bin)");
-        DeclareHistogram2D(DD_TQDCAVEVSCORTOF, SC, SD,
-        "<E> vs. CorTOF(0.5ns/bin)");
+        DeclareHistogram2D(DD_TQDCAVEVSTOF, SC, SC,
+        "<E>/4 vs. TOF(0.5ns/bin)");
+        DeclareHistogram2D(DD_TQDCAVEVSCORTOF, SC, SC,
+        "<E>/4 vs. CorTOF(0.5ns/bin)");
 //        DeclareHistogram2D(DD_CORRELATED_TOF, SC, SC,
 //        "Correlated TOF");
 //        DeclareHistogram2D(DD_QDCAVEVSSTARTQDCSUM, SC, SD,
@@ -258,39 +258,48 @@ void VandleProcessor::AnalyzeBarStarts(void) {
             unsigned int barPlusStartLoc = barLoc*numStarts_ + startLoc;
 
             BarDetector start = (*itStart).second;
+            
+//            double startGTD = start.GetTimeDifference();
+//                cout << "startTimeDiff " << startGTD << endl;
+// WAP edit---  Only process TOF for "good" start events with reasonable Tdiff
 
-            double tof = bar.GetCorTimeAve() -
-                 start.GetTimeZero() + cal.GetTofOffset(startLoc);
+//                              && (start.GetQdc() > 2500.0)
+			if ((start.GetBetaVel() > 0.10)  && (start.GetBetaVel() < 1.4)){
 
-// want to edit start.GetCorTimeAve() to be start.GetCorTimeZero() from the distance between them
+            double tof = bar.GetTimeAverage() - start.GetTimeZero() + 
+                    cal.GetTofOffset(startLoc);
+// WAP edit --start.GetCorTimeAve() to be start.GetTimeZero() from the distance between mcps
+///               cout << "barCortime -----" << bar.GetCorTimeAve() << endl;
 
             double corTof =
                 CorrectTOF(tof, bar.GetFlightPath(), cal.GetZ0());
-
+                
             plot(DD_TOFBARS+histTypeOffset, tof*plotMult_+plotOffset_,
                  barPlusStartLoc);
             plot(DD_CORTOFBARS, corTof*plotMult_+plotOffset_, barPlusStartLoc);
 
             if(cal.GetTofOffset(startLoc) != 0) {
                 plot(DD_TQDCAVEVSTOF+histTypeOffset, tof*plotMult_+plotOffset_,
-                     bar.GetQdc());
+                     (bar.GetQdc()/4.0));
                 plot(DD_TQDCAVEVSCORTOF+histTypeOffset,
-                     corTof*plotMult_+plotOffset_, bar.GetQdc());
+                     corTof*plotMult_+plotOffset_, (bar.GetQdc()/4.0));
             }
 
-            if (geSummary_) {
-                if (geSummary_->GetMult() > 0) {
-                    const vector<ChanEvent *> &geList = geSummary_->GetList();
-                    for (vector<ChanEvent *>::const_iterator itGe = geList.begin();
-                        itGe != geList.end(); itGe++) {
-                        double calEnergy = (*itGe)->GetCalEnergy();
-                        plot(DD_GAMMAENERGYVSTOF+histTypeOffset, calEnergy, tof);
-                    }
-                } else {
-                    plot(DD_TQDCAVEVSTOF_VETO+histTypeOffset, tof, bar.GetQdc());
-                    plot(DD_TOFBARS_VETO+histTypeOffset, tof, barPlusStartLoc);
-                }
-            }
+ //          if (geSummary_) {
+ //               if (geSummary_->GetMult() > 0) {
+ //                   const vector<ChanEvent *> &geList = geSummary_->GetList();
+ //                   for (vector<ChanEvent *>::const_iterator itGe = geList.begin();
+ //                       itGe != geList.end(); itGe++) {
+ //                       double calEnergy = (*itGe)->GetCalEnergy();
+ //                       plot(DD_GAMMAENERGYVSTOF+histTypeOffset, calEnergy, tof);
+ //                   }
+ //               } else {
+ //                   plot(DD_TQDCAVEVSTOF_VETO+histTypeOffset, tof, bar.GetQdc());
+ //                   plot(DD_TOFBARS_VETO+histTypeOffset, tof, barPlusStartLoc);
+ //               }
+                
+ //           }
+            } // if start GetBetaVel > 0.10
         } // for(TimingMap::iterator itStart
     } //(BarMap::iterator itBar
 } //void VandleProcessor::AnalyzeData

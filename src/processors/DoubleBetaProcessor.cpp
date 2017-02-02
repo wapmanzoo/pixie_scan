@@ -31,10 +31,10 @@ DoubleBetaProcessor::DoubleBetaProcessor():
 }
 
 void DoubleBetaProcessor::DeclarePlots(void) {
-    DeclareHistogram2D(DD_QDC, SD, S3, "Location vs. Coincident QDC");
-    DeclareHistogram2D(DD_TDIFF, SB, S3, "Location vs. Time Difference");
-    DeclareHistogram2D(DD_PP, SC, SC,"Phase vs. Phase - Bar 0 Only");
-    DeclareHistogram2D(DD_QDCTDIFF, SC, SE,"TimeDiff vs. Coincident QDC");
+    DeclareHistogram2D(DD_QDC, SD, S3, "Location vs. QDC");
+    DeclareHistogram2D(DD_TDIFF, SB, S3, "Location vs. Time Difference*4");
+    DeclareHistogram2D(DD_PP, SC, SC,"BetaVel *100 vs. QDC/4");
+    DeclareHistogram2D(DD_QDCTDIFF, SC, SC,"TimeDiff*4 vs. Coincident QDC/4");
 }
 
 bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
@@ -53,8 +53,8 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
     lrtbars_ = builder.GetLrtBarMap();
     bars_ = builder.GetBarMap();
 
-    double resolution = 2;
-    double offset = 1500;
+    double resolution = 4;
+    double offset = 1000;
 
     for(map<unsigned int, pair<double,double> >::iterator it = lrtbars_.begin();
 	it != lrtbars_.end(); it++) {
@@ -70,10 +70,12 @@ bool DoubleBetaProcessor::PreProcess(RawEvent &event) {
 	plot(DD_QDC, (*it).second.GetRightSide().GetTraceQdc(), barNum * 2 + 1);
 	plot(DD_TDIFF, (*it).second.GetTimeDifference()*resolution + offset, barNum);
 	if(barNum == 0) {
-	    plot(DD_PP, (*it).second.GetLeftSide().GetPhase()*resolution,
-		 (*it).second.GetRightSide().GetPhase()*resolution);
+	    plot(DD_PP, (*it).second.GetBetaVel()*100.0+offset,
+		 (*it).second.GetQdc()*0.25);
+//	    plot(DD_PP, (*it).second.GetLeftSide().GetPhase()*resolution,
+//		 (*it).second.GetRightSide().GetPhase()*resolution);
 	    plot(DD_QDCTDIFF, (*it).second.GetTimeDifference()*resolution+offset,
-		 (*it).second.GetQdc());
+		 (*it).second.GetQdc()*0.25);
 	}
     }
     return(true);

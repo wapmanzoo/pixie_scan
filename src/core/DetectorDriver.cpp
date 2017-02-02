@@ -48,8 +48,9 @@
 #include "TraceExtractor.hpp"
 #include "TraceFilterAnalyzer.hpp"
 #include "WaveformAnalyzer.hpp"
+#include "FissionStudyProcessor.hpp"
 
-#include "TemplateExpProcessor.hpp"
+//#include "TemplateExpProcessor.hpp"
 
 #ifdef useroot
 #include "RootProcessor.hpp"
@@ -214,8 +215,10 @@ void DetectorDriver::LoadProcessors(Messenger& m) {
                 vecProcess.push_back(new PspmtProcessor());
         } else if (name == "TemplateProcessor") {
             vecProcess.push_back(new TemplateProcessor());
-        } else if (name == "TemplateExpProcessor") {
-            vecProcess.push_back(new TemplateExpProcessor());
+//        } else if (name == "TemplateExpProcessor") {
+//            vecProcess.push_back(new TemplateExpProcessor());        
+		} else if (name == "FissionStudyProcessor") {
+            vecProcess.push_back(new FissionStudyProcessor());
 	}
 #ifdef useroot
         else if (name == "RootProcessor") {

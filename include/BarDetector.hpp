@@ -76,10 +76,13 @@ public:
     }
     /** \return the angle of the particle w.r.t. the source */
     double GetTheta() const {return(acos(GetCalibration().GetZ0()/GetFlightPath()));}
+
     /** \return The average arrival time of the left and right ends */
     double GetTimeAverage() const {
-        return((right_.GetHighResTime() + left_.GetHighResTime())*0.5);
+            return( (left_.GetHighResTime() + right_.GetHighResTime())*0.5 );
+
     }
+    
     /** \return the timeDiff_ var */
     double GetTimeDifference() const {
         return((left_.GetHighResTime()-right_.GetHighResTime()) +
@@ -90,13 +93,23 @@ public:
         return((left_.GetCorrectedTime() +
                right_.GetCorrectedTime())*0.5);
     }
-    // Return velocity determined Tzero in past
+    
+    // WAP edit -- Return velocity determined Tzero in past
         //left is MCP1 and is 42.74 cm from zero
         //right is MCP2 and is 81.2 cm from MCP1
     double GetTimeZero() const {
+//                               return(left_.GetHighResTime() ;
         return(left_.GetHighResTime() - (( (right_.GetHighResTime() -
-              left_.GetHighResTime() )/81.2)*42.74) );
+              left_.GetHighResTime() - 
+                GetCalibration().GetLeftRightTimeOffset() )/81.2)*33.3) );
     }
+    
+    // WAP edit -- Return velocity of signals thur left right (front/back) MCPs in cm/ns
+        double GetBetaVel() const {
+        return(81.2/(right_.GetHighResTime() - 
+            GetCalibration().GetLeftRightTimeOffset() - left_.GetHighResTime()));
+    }
+    
     /** \return the The walk corrected time difference */
     double GetCorTimeDiff() const {
         return(left_.GetCorrectedTime() -

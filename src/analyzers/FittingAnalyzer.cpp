@@ -74,7 +74,7 @@ using namespace dammIds::trace::waveformanalyzer;
 void FittingAnalyzer::DeclarePlots(void) {
     Trace sample_trace = Trace();
     sample_trace.DeclareHistogram2D(DD_TRACES, S7, S5, "traces data FitAnalyzer");
-    sample_trace.DeclareHistogram2D(DD_AMP, SE, SC, "Fit Amplitude");
+    sample_trace.DeclareHistogram2D(DD_AMP, SC, SC, "Fit Amplitude");
     sample_trace.DeclareHistogram1D(D_PHASE, SE, "Fit X0");
     sample_trace.DeclareHistogram1D(D_CHISQPERDOF, SE, "Chi^2/dof");
     sample_trace.DeclareHistogram1D(D_SIGMA, SE, "Std Dev Baseline");
